@@ -1,5 +1,6 @@
 package com.cicad.app.repository;
 
+import com.cicad.app.entities.Student;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
@@ -11,6 +12,15 @@ public class StudentRepository {
 
 	@PersistenceContext
 	private EntityManager entityManager;
+
+	public Student get(Integer id) {
+		return entityManager.find(Student.class, id);
+	}
+
+	public Student create(Student actualStudent) {
+		entityManager.persist(actualStudent);
+		return actualStudent;
+	}
 
 
 }

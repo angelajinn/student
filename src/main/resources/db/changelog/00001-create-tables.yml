@@ -9,9 +9,69 @@ databaseChangeLog:
             sql: >
               IF (NOT EXISTS(SELECT *
                              FROM INFORMATION_SCHEMA.TABLES
+                             WHERE TABLE_NAME = 'COURSES'))
+                  BEGIN
+                      CREATE TABLE COURSES
+                      (
+                          ID   INT IDENTITY,
+                          NAME NVARCHAR(31),
+                          PRIMARY KEY (ID)
+                      )
+                  END
+
+              IF (NOT EXISTS(SELECT *
+                             FROM INFORMATION_SCHEMA.TABLES
+                             WHERE TABLE_NAME = 'PROGRAMS'))
+                  BEGIN
+                      CREATE TABLE PROGRAMS
+                      (
+                          ID   INT IDENTITY,
+                          NAME NVARCHAR(31),
+                          PRIMARY KEY (ID)
+                      )
+                  END
+
+              IF (NOT EXISTS(SELECT *
+                             FROM INFORMATION_SCHEMA.TABLES
                              WHERE TABLE_NAME = 'STUDENTS'))
-                BEGIN
-                  CREATE TABLE STUDENTS (
-                    ID INT,
-                    PRIMARY KEY (ID)
-                  )
+                  BEGIN
+
+                      CREATE TABLE STUDENTS
+                      (
+                          ID         INT IDENTITY,
+                          FIRST_NAME NVARCHAR(31),
+                          LAST_NAME  NVARCHAR(31),
+                          DOB        DATE,
+                          GPA        DECIMAL(1, 1),
+                          PROGRAM_ID INT,
+                          PRIMARY KEY (ID)
+                      )
+                  END
+
+              IF (NOT EXISTS(SELECT *
+                             FROM INFORMATION_SCHEMA.TABLES
+                             WHERE TABLE_NAME = 'STUDENT_COURSES'))
+                  BEGIN
+                      CREATE TABLE STUDENT_COURSES
+                      (
+                          ID         INT IDENTITY,
+                          STUDENT_ID INT,
+                          COURSE_ID  INT,
+                          PRIMARY KEY (ID)
+                      )
+                  END
+
+              ALTER TABLE STUDENTS
+                  ADD CONSTRAINT FK_S_PI_P
+                      FOREIGN KEY (PROGRAM_ID)
+                          REFERENCES PROGRAMS
+
+              ALTER TABLE STUDENT_COURSES
+                  ADD CONSTRAINT FK_SC_CI_C
+                      FOREIGN KEY (COURSE_ID)
+                          REFERENCES COURSES
+
+              ALTER TABLE STUDENT_COURSES
+                  ADD CONSTRAINT FK_SC_SI_S
+                      FOREIGN KEY (STUDENT_ID)
+                          REFERENCES STUDENTS

@@ -22,6 +22,7 @@
 
         <jakarta-servlet.version>5.0.0</jakarta-servlet.version>
         <jakarta.inject.version>2.0.0</jakarta.inject.version>
+        <liquibase-core.version>4.21.1</liquibase-core.version>
         <mssql.jdbc.version>12.2.0.jre11</mssql.jdbc.version>
     </properties>
 
@@ -49,6 +50,11 @@
                     <artifactId>flyway-core</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+            <version>${liquibase-core.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -91,6 +97,7 @@
                 <includes>
                     <include>app/dist/</include>
                     <include>templates/</include>
+                    <include>db/</include>
                     <include>META-INF/</include>
                 </includes>
             </resource>

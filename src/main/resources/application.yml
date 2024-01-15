@@ -38,4 +38,3 @@ spring:
     url: ${db.url:jdbc:sqlserver://serverName\\instanceName:port;databaseName=SAMPLE_DB;integratedSecurity=true;}
     change-log: classpath:db/changelog/db.changelog-master.yml
     default-schema: ${db.schema:APP}
-    enabled: false
