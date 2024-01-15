@@ -1,0 +1,12 @@
+USE master
+GO
+CREATE LOGIN APP_admin WITH PASSWORD = 'APP_admin_password'
+CREATE DATABASE APP_DB COLLATE SQL_Latin1_General_CP1_CI_AI
+GO
+USE APP_DB
+GO
+CREATE SCHEMA APP
+    GO
+CREATE USER APP_admin FOR LOGIN APP_admin WITH DEFAULT_SCHEMA = APP
+EXEC sp_addrolemember 'db_owner', 'APP_admin'
+GO

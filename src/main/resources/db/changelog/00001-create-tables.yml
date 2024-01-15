@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-tables-1
+      preConditions:
+        - onFail: MARK_RAN
+      author: APP
+      changes:
+        - sql:
+            sql: >
+              IF (NOT EXISTS(SELECT *
+                             FROM INFORMATION_SCHEMA.TABLES
+                             WHERE TABLE_NAME = 'STUDENTS'))
+                BEGIN
+                  CREATE TABLE STUDENTS (
+                    ID INT,
+                    PRIMARY KEY (ID)
+                  )
