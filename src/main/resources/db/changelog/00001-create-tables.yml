@@ -61,17 +61,26 @@ databaseChangeLog:
                       )
                   END
 
-              ALTER TABLE STUDENTS
+              IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE CONSTRAINT_NAME = 'FK_S_PI_P')
+              BEGIN
+                  ALTER TABLE STUDENTS
                   ADD CONSTRAINT FK_S_PI_P
-                      FOREIGN KEY (PROGRAM_ID)
-                          REFERENCES PROGRAMS
+                  FOREIGN KEY (PROGRAM_ID)
+                  REFERENCES PROGRAMS
+              END
 
-              ALTER TABLE STUDENT_COURSES
+              IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE CONSTRAINT_NAME = 'FK_SC_CI_C')
+              BEGIN
+                  ALTER TABLE STUDENT_COURSES
                   ADD CONSTRAINT FK_SC_CI_C
-                      FOREIGN KEY (COURSE_ID)
-                          REFERENCES COURSES
+                  FOREIGN KEY (COURSE_ID)
+                  REFERENCES COURSES
+              END
 
-              ALTER TABLE STUDENT_COURSES
+              IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE CONSTRAINT_NAME = 'FK_SC_SI_S')
+              BEGIN
+                  ALTER TABLE STUDENT_COURSES
                   ADD CONSTRAINT FK_SC_SI_S
-                      FOREIGN KEY (STUDENT_ID)
-                          REFERENCES STUDENTS
+                  FOREIGN KEY (STUDENT_ID)
+                  REFERENCES STUDENTS
+              END
