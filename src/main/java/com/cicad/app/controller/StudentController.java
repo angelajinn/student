@@ -4,6 +4,7 @@ import com.cicad.app.entities.Student;
 import com.cicad.app.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("api/student")
@@ -17,9 +18,24 @@ public class StudentController {
 		return studentService.get(id);
 	}
 
+	@RequestMapping(value = "/", method = RequestMethod.GET)
+	public List<Student> getAll() {
+		return studentService.getAll();
+	}
+
 	@RequestMapping(method = RequestMethod.POST)
 	public Object create(@RequestBody Student sourceStudent) {
 		return studentService.create(sourceStudent);
+	}
+
+	@RequestMapping(method = RequestMethod.PUT)
+	public Object update(@RequestBody Student sourceStudent) {
+		return studentService.update(sourceStudent);
+	}
+
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+	public void delete(@PathVariable Integer id) {
+		studentService.delete(id);
 	}
 
 }

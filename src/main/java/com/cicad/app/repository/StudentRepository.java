@@ -5,6 +5,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
 
 @Repository
 @Transactional
@@ -20,6 +21,29 @@ public class StudentRepository {
 	public Student create(Student actualStudent) {
 		entityManager.persist(actualStudent);
 		return actualStudent;
+	}
+
+	public Student save(Student actualStudent) {
+		if (actualStudent.getId() == null) {
+			entityManager.persist(actualStudent);
+			return actualStudent;
+		} else {
+			return entityManager.merge(actualStudent);
+		}
+	}
+
+	public List<Student> findAllStudents() {
+		String jpql = "SELECT s FROM Student s"; // JPQL query to fetch all students
+		return entityManager.createQuery(jpql, Student.class).getResultList(); // Executes the JPQL query and maps the result to Student entities
+	}
+
+	public void delete(Integer id) {
+		Student student = entityManager.find(Student.class, id);
+		if (student != null) {
+			entityManager.remove(student);
+		} else {
+			throw new IllegalArgumentException("Student with id " + id + " not found");
+		}
 	}
 
 

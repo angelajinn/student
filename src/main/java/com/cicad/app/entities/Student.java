@@ -1,5 +1,7 @@
 package com.cicad.app.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.io.Serial;
@@ -32,6 +34,7 @@ public class Student implements Serializable {
 
 	@ManyToOne
 	@JoinColumn(name = "PROGRAM_ID")
+	@JsonIgnoreProperties({"students"}) // PREVENTS INFINITE RECURSION
 	private Program program;
 
 	public Integer getId() {
