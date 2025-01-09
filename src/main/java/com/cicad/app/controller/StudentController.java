@@ -28,8 +28,9 @@ public class StudentController {
 		return studentService.create(sourceStudent);
 	}
 
-	@RequestMapping(method = RequestMethod.PUT)
-	public Object update(@RequestBody Student sourceStudent) {
+	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+	public Student update(@PathVariable Integer id, @RequestBody Student sourceStudent) {
+		sourceStudent.setId(id);
 		return studentService.update(sourceStudent);
 	}
 

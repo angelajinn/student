@@ -23,13 +23,8 @@ public class StudentRepository {
 		return actualStudent;
 	}
 
-	public Student save(Student actualStudent) {
-		if (actualStudent.getId() == null) {
-			entityManager.persist(actualStudent);
-			return actualStudent;
-		} else {
-			return entityManager.merge(actualStudent);
-		}
+	public Student update(Student actualStudent) {
+		return entityManager.merge(actualStudent);
 	}
 
 	public List<Student> findAllStudents() {

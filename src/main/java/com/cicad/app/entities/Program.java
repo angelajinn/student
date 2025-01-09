@@ -1,5 +1,6 @@
 package com.cicad.app.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.io.Serial;
@@ -21,7 +22,10 @@ public class Program implements Serializable {
 	@Column(name = "NAME")
 	private String name;
 
+	// Student has a REFERENCE to a Program
+	// Program can access the list of Student(s) associated with it
 	@OneToMany(mappedBy = "program")
+	@JsonIgnoreProperties({"program"}) // PREVENTS INFINITE RECURSION
 	private Set<Student> students;
 
 	public Integer getId() {
