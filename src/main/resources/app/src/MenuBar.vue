@@ -14,6 +14,7 @@ export default {
   methods: {
     handleClick(buttonName) {
       console.log(`${buttonName} button clicked`);
+      this.$router.push(`/${buttonName}`);
       // You can add navigation logic here, e.g., using Vue Router
     }
   }
@@ -29,6 +30,7 @@ export default {
   justify-content: center;
   gap: 110px;
   padding-top: 20px;
+  padding-bottom: 20px;
   /* background-color: #333;
   // padding: 10px; */
 }

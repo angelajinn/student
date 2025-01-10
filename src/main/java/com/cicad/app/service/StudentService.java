@@ -39,6 +39,7 @@ public class StudentService {
 		}
 		actualStudent.setGpa(sourceStudent.getGpa());
 		actualStudent.setProgram(sourceStudent.getProgram());
+		actualStudent.setCourse(sourceStudent.getCourses());
 		return studentRepository.create(actualStudent);
 	}
 

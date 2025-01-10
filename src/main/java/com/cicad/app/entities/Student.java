@@ -3,10 +3,12 @@ package com.cicad.app.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import org.hibernate.tool.schema.internal.StandardUserDefinedTypeExporter;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Set;
 
 @Entity
 @Table(name = "STUDENTS")
@@ -36,6 +38,10 @@ public class Student implements Serializable {
 	@JoinColumn(name = "PROGRAM_ID")
 	@JsonIgnoreProperties({"students"}) // PREVENTS INFINITE RECURSION
 	private Program program;
+
+	@OneToMany(mappedBy = "student")
+	@JsonIgnoreProperties("student")
+	private Set<StudentCourses> courses;
 
 	public Integer getId() {
 		return id;
@@ -84,4 +90,11 @@ public class Student implements Serializable {
 	public void setProgram(Program program) {
 		this.program = program;
 	}
+
+	public Set<StudentCourses> getCourses() {
+		return courses;
+	}
+
+	public void setCourse(Set<StudentCourses> courses) { this.courses = courses; }
+
 }

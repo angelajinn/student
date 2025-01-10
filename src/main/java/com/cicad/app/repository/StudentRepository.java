@@ -1,5 +1,6 @@
 package com.cicad.app.repository;
 
+import com.cicad.app.entities.Course;
 import com.cicad.app.entities.Student;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -21,6 +22,10 @@ public class StudentRepository {
 	public Student create(Student actualStudent) {
 		entityManager.persist(actualStudent);
 		return actualStudent;
+	}
+
+	public Student findById(Integer id) {
+		return entityManager.find(Student.class, id);
 	}
 
 	public Student update(Student actualStudent) {
