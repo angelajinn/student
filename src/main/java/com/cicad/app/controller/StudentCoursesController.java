@@ -18,7 +18,7 @@ public class StudentCoursesController {
     @Autowired
     private StudentCoursesService studentCoursesService;
 
-    public class StudentCoursesRequest {
+    public static class StudentCoursesRequest {
         private List<Integer> courseIds;
 
         public List<Integer> getCourseIds() {

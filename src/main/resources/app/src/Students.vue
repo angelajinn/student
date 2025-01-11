@@ -48,43 +48,12 @@
       </form>
     </div>
 
-    <div>
-      <h2>All Students</h2>
-      <ul>
-        <table>
-          <thead>
-          <tr>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Date of Birth</th>
-            <th>GPA</th>
-            <th>Program</th>
-<!--            <th>Courses</th>-->
-            <th>Actions</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr v-for="student in allStudents" :key="student.id">
-            <td>{{ student.firstName }}</td>
-            <td>{{ student.lastName }}</td>
-            <td>{{ student.dateOfBirth }}</td>
-            <td>{{ student.gpa }}</td>
-            <td>{{ student.program ? student.program.name : 'N/A' }}</td> <!-- Handle Program association -->
-<!--            <td>{{ student.course ? student.course.name : 'N/A' }}</td>-->
-            <td>
-              <button @click="editStudent(student)">Edit</button>
-              <button @click="deleteStudent(student.id)">Delete</button>
-            </td>
-          </tr>
-          </tbody>
-        </table>
-
-      </ul>
-    </div>
 
     <div v-if="studentCreated">
-      <h2>Add Courses to Student</h2>
-      <form @submit.prevent="addCoursesToStudent">
+      <div class="create-form">
+        <hr class="new1">
+        <h2>Add Courses to Student</h2>
+        <form @submit.prevent="addCoursesToStudent">
           <label for="course">Courses:</label>
           <multiselect
               v-model="coursesToAdd"
@@ -94,42 +63,112 @@
               label="name"
               placeholder="Select courses"
           />
-        <button type="submit">Add Courses</button>
-      </form>
+          <button type="submit">Add Courses</button>
+        </form>
+      </div>
     </div>
 
     <div v-if="editingStudent">
-      <h2>Edit Student</h2>
-      <form @submit.prevent="updateStudent">
-        <p>
-          First name:
-          <input type="text" required placeholder="first name..." v-model="editingStudent.firstName">
-        </p>
-        <p>
-          Last name:
-          <input type="text" placeholder="last name..." v-model="editingStudent.lastName">
-        </p>
-        <p>
-          Date of birth:
-          <input type="date" placeholder="dob..." v-model="editingStudent.dateOfBirth">
-        </p>
-        <p>
-          GPA:
-          <input type="number" placeholder="gpa..." v-model="editingStudent.gpa" step="0.01">
-        </p>
-        <p>
-          Program:
-          <select v-model="editingStudent.program">
-            <option disabled value="">Please select one</option>
-            <option v-for="program in allPrograms" :key="program.id" :value="program.id">
-              {{ program.name }}
-            </option>
-          </select>
-        </p>
-        <button type="submit">Update student</button>
+      <div class="create-form">
+
+        <hr class="new1">
+
+        <h2>Edit Student</h2>
+        <form @submit.prevent="updateStudent">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="firstName">First name:</label>
+              <input type="text" required placeholder="first name..." v-model="editingStudent.firstName">
+            </div>
+
+            <div class="form-group">
+              <label for="lastName">Last name:</label>
+              <input type="text" placeholder="last name..." v-model="editingStudent.lastName">
+            </div>
+
+            <div class="form-group">
+              <label for="dob">Date of birth:</label>
+              <input type="date" placeholder="dob..." v-model="editingStudent.dateOfBirth">
+            </div>
+
+          </div>
+
+          <div class="form-row">
+            <div class = "form-group">
+              <label for="program">Program:</label>
+              <select v-model="editingStudent.program">
+                <option disabled value="">Please select one</option>
+                <option v-for="program in allPrograms" :key="program.id" :value="program.id">
+                  {{ program.name }}
+                </option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="gpa">GPA:</label>
+              <input type="number" placeholder="gpa..." v-model="editingStudent.gpa" step="0.01">
+            </div>
+          </div>
+          <div class="edit-form-button">
+            <button type="submit">Update student</button>
+            <button type="button" @click="cancelEdit">Cancel</button>
+          </div>
       </form>
     </div>
+</div>
+
+
+      <div class="search-wrapper">
+        <div class="search-fields">
+          <input class="form-control" v-model="filters.firstName.value" placeholder="Filter by First Name"/>
+          <input class="form-control" v-model="filters.lastName.value" placeholder="Filter by Last Name"/>
+          <select v-model="filters.program.value" class="form-control">
+            <option value="">Filter by Program</option>
+            <option v-for="program in allPrograms" :key="program.id" :value="program.id">
+              {{program.name}}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+          <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Date of Birth</th>
+            <th>GPA</th>
+            <th>Program</th>
+            <th>Courses</th>
+            <th>Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="student in filteredStudents" :key="student.id">
+            <td>{{ student.firstName }}</td>
+            <td>{{ student.lastName }}</td>
+            <td>{{ student.dateOfBirth }}</td>
+            <td>{{ student.gpa }}</td>
+            <td>{{ student.program ? student.program.name : 'N/A' }}</td> <!-- Handle Program association -->
+            <td>
+              <ul>
+                <li v-for="course in student.courses" :key="course.id">
+                  {{course.course.name}}
+<!--                  take course type from StudentCourse-->
+                </li>
+              </ul>
+            </td>
+            <td>
+              <button @click="editStudent(student)">Edit</button>
+              <button @click="deleteStudent(student.id)">Delete</button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+    </div>
   </div>
+
 </template>
 
 <script>
@@ -150,6 +189,13 @@ export default {
         program: '',
         course: [],
       },
+
+      filters: {
+        firstName: { value: '' },
+        lastName: { value: '' },
+        program: { value: '' },
+      },
+
       coursesToAdd: [],
       allStudents: [], // array that stores the list of all students
       editingStudent: null,
@@ -159,6 +205,26 @@ export default {
       studentId: null,
     };
   },
+
+  computed: {
+    filteredStudents() {
+      return this.allStudents.filter(student => {
+        const matchFirstName = this.filters.firstName.value
+            ? student.firstName.toLowerCase().includes(this.filters.firstName.value.toLowerCase())
+            : true;
+
+        const matchLastName = this.filters.lastName.value
+            ? student.lastName.toLowerCase().includes(this.filters.lastName.value.toLowerCase())
+            : true;
+
+        const matchProgram = this.filters.program.value
+            ? student.program && student.program.id === this.filters.program.value
+            : true;
+        return matchFirstName && matchLastName && matchProgram;
+      });
+    },
+  },
+
   created() {
     this.fetchStudents();
     this.fetchPrograms();
@@ -170,11 +236,15 @@ export default {
       this.editingStudent.program = student.program ? student.program.id : null;
     },
 
+    cancelEdit() {
+      this.editingStudent = null;
+    },
+
     fetchStudents() {
       fetch('/api/student/')
           .then(response => response.json()) //  parses JSON
           .then(data => {
-            this.allStudents = data; // Populate allStudents array
+            this.allStudents = data.reverse(); // Populate allStudents array
           });
     },
 
@@ -239,17 +309,18 @@ export default {
     },
 
     addCoursesToStudent() {
-      fetch(`/api/student/${this.studentId}/add-courses`, {
-        method: "PUT",
+      fetch(`/api/student-courses/${this.studentId}/enroll`, {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ courseIds: this.coursesToAdd.map(course => course.id) }),
       })
-          .then(response => response.json())
+          // .then(response => response.json()) don't need this since 'enroll' function in controller return VOID -> no JSON response
           .then(data => {
             this.fetchStudents();
             this.coursesToAdd = [];
+            this.studentCreated = false;
           })
     },
 
@@ -315,6 +386,7 @@ input, select {
 .page-container {
   margin-left: 50px;
   margin-right: 50px;
+  margin-bottom: 200px;
 }
 
 input[type=date],
@@ -353,5 +425,66 @@ button {
 button:hover {
   background-color: #B0D1B8;
 }
+
+.edit-form-button {
+  display:flex;
+  gap: 20px;
+}
+
+.search-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+  font-family: 'Raleway', sans-serif;
+}
+
+.search-fields {
+  display: flex;
+  height: 45px;
+  gap: 20px; /* Adds spacing between the two fields */
+  justify-content: left; /* Ensures the fields are centered */
+}
+
+.search-fields input,
+.search-fields select {
+  height: 45px /* Ensure all fields have the same width */
+}
+
+
+.table-wrapper {
+  width: 100%; /* Fixed width */
+  max-width: 1200px;
+  max-height: 400px; /* Maximum height */
+  overflow-y: auto; /* Enable scrolling for excess rows */
+  margin: 20px auto;
+  display: flex;
+  font-family: 'Raleway', sans-serif;
+}
+
+table {
+  width: 100%; /* Ensures table takes up the full width of its container */
+  table-layout: fixed; /* Prevents column resizing based on content */
+  border-collapse: collapse;
+}
+
+th {
+  position: sticky;
+  top: 0;
+  background-color: #B0D1B8;
+  z-index: 1;
+  height: 50px;
+}
+
+td, td {
+  padding: 8px;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+
+hr.new1 {
+  border-top: 1px solid #f1f1f1;
+}
+
 
 </style>
