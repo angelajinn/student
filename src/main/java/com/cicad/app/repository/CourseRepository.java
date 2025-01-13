@@ -32,6 +32,8 @@ public class CourseRepository {
         return entityManager.find(Course.class, id);
     }
 
+    public Course update(Course actualCourse) {return entityManager.merge(actualCourse); }
+
     public void delete(Integer id) {
         Course course = entityManager.find(Course.class, id);
         if (course != null) {

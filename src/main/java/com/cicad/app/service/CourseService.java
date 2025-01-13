@@ -1,6 +1,7 @@
 package com.cicad.app.service;
 
 import com.cicad.app.entities.Course;
+import com.cicad.app.entities.Program;
 import com.cicad.app.repository.CourseRepository;
 import com.cicad.app.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,14 @@ public class CourseService {
         Course actualCourse = new Course();
         actualCourse.setName(sourceCourse.getName());
         return courseRepository.create(actualCourse);
+    }
+
+    public Course update(Course sourceCourse) {
+        Course existingCourse = courseRepository.get(sourceCourse.getId());
+        if (existingCourse != null) {
+            existingCourse.setName(sourceCourse.getName());
+        }
+        return courseRepository.update(sourceCourse);
     }
 
     public void delete(Integer id) {

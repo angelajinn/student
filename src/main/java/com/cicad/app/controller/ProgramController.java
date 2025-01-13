@@ -29,6 +29,12 @@ public class ProgramController {
         return programService.create(sourceProgram);
     }
 
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+    public Program update(@PathVariable Integer id, @RequestBody Program sourceProgram) {
+        sourceProgram.setId(id);
+        return programService.update(sourceProgram);
+    }
+
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public void delete(@PathVariable Integer id) {
         programService.delete(id);

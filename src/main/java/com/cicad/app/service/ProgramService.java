@@ -32,6 +32,15 @@ public class ProgramService {
         return programRepository.create(actualProgram);
     }
 
+    public Program update(Program sourceProgram) {
+        Program existingProgram = programRepository.get(sourceProgram.getId());
+        if (existingProgram != null) {
+            existingProgram.setName(sourceProgram.getName());
+        }
+
+        return programRepository.update(existingProgram);
+    }
+
     public void delete(Integer id) {
         programRepository.delete(id);
     }

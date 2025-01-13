@@ -17,6 +17,27 @@
       </form>
     </div>
 
+    <div v-if="editingCourse">
+      <div class="create-form">
+
+        <hr class="new1">
+
+        <h2>Edit Course</h2>
+        <form @submit.prevent="updateCourse">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="courseName">Course name:</label>
+              <input type="text" required placeholder="first name..." v-model="editingCourse.name">
+            </div>
+          </div>
+          <div class="edit-form-button">
+            <button type="submit">Update</button>
+            <button type="button" @click="cancelEdit">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <div class="table-wrapper">
       <ul>
         <table>
@@ -31,8 +52,10 @@
             <td>{{ course.name }}</td>
 
             <td>
+              <div class="table-buttons">
               <button @click="editCourse(course)">Edit</button>
               <button @click="deleteCourse(course.id)">Delete</button>
+              </div>
             </td>
           </tr>
           </tbody>
@@ -53,6 +76,7 @@ export default {
         name: ''
       },
       allCourses:[],
+      editingCourse: null,
 
     };
   },
@@ -81,7 +105,30 @@ export default {
       fetch('/api/course/')
           .then(response => response.json())
           .then(data => {
-            this.allCourses = data;
+            this.allCourses = data.reverse();
+          });
+    },
+
+    editCourse(course) {
+      this.editingCourse = {...course};
+    },
+
+    cancelEdit() {
+      this.editingCourse = null;
+    },
+
+    updateCourse() {
+      fetch(`/api/course/${this.editingCourse.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(this.editingCourse),
+      })
+          .then(response => response.json()) // Handle response
+          .then(() => {
+            this.fetchCourses();
+            this.editingCourse = null;
           });
     },
 
@@ -187,6 +234,10 @@ button:hover {
   background-color: #B0D1B8;
 }
 
+.edit-form-button {
+  display:flex;
+  gap: 20px;
+}
 
 .table-wrapper {
   width: 100%; /* Fixed width */
@@ -216,6 +267,12 @@ td, td {
   padding: 8px;
   text-align: center;
   border-bottom: 1px solid #ddd;
+}
+
+.table-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
 }
 
 </style>

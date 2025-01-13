@@ -24,6 +24,12 @@ public class CourseController {
     @RequestMapping(method = RequestMethod.POST)
     public Object create(@RequestBody Course sourceCourse) {return courseService.create(sourceCourse);}
 
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+    public Course update(@PathVariable Integer id, @RequestBody Course sourceCourse) {
+        sourceCourse.setId(id);
+        return courseService.update(sourceCourse);
+    }
+
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public void delete(@PathVariable Integer id) {courseService.delete(id);}
 }

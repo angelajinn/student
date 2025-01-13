@@ -37,7 +37,9 @@ public class StudentService {
 				&& sourceStudent.getDateOfBirth().isBefore(LocalDate.now())) {
 			actualStudent.setDateOfBirth(sourceStudent.getDateOfBirth());
 		}
-		actualStudent.setGpa(sourceStudent.getGpa());
+		if (sourceStudent.getGpa() >= 0 && sourceStudent.getGpa() <= 5) {
+			actualStudent.setGpa(sourceStudent.getGpa());
+		}
 		actualStudent.setProgram(sourceStudent.getProgram());
 		actualStudent.setCourse(sourceStudent.getCourses());
 		return studentRepository.create(actualStudent);
@@ -53,6 +55,7 @@ public class StudentService {
 
 			Program program = programRepository.findById(sourceStudent.getProgram().getId());
 			existingStudent.setProgram(program);
+
 		}
 		return studentRepository.update(existingStudent);
 	}

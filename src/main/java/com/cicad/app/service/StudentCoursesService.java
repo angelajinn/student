@@ -23,4 +23,8 @@ public class StudentCoursesService {
     public void enroll(Integer studentId, List<Integer> courseIds) {
         studentCoursesRepository.enroll(studentId, courseIds);
     }
+
+    public void updateStudentCourses(Integer studentId, List<Integer> courseIds) {
+        studentCoursesRepository.updateStudentCourses(studentId, courseIds);
+    }
 }

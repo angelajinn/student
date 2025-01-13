@@ -33,6 +33,8 @@ public class ProgramRepository {
         return entityManager.find(Program.class, id);
     }
 
+    public Program update(Program actualProgram) { return entityManager.merge(actualProgram); }
+
     public void delete(Integer id) {
         Program program = entityManager.find(Program.class, id);
         if (program != null) {

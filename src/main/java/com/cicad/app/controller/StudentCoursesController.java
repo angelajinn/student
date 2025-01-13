@@ -34,4 +34,10 @@ public class StudentCoursesController {
     public void enrollStudentInCourses(@PathVariable Integer studentId, @RequestBody StudentCoursesRequest request) {
         studentCoursesService.enroll(studentId, request.getCourseIds());
     }
+
+    @RequestMapping(value = "/{studentId}/update", method = RequestMethod.PUT)
+    public void updateStudentInCourses(@PathVariable Integer studentId, @RequestBody StudentCoursesRequest request) {
+        studentCoursesService.updateStudentCourses(studentId, request.getCourseIds());
+    }
+
 }

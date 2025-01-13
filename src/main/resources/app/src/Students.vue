@@ -6,6 +6,7 @@
       <h3 style="text-align: center; font-family: 'Raleway', sans-serif; font-size: 20px; margin-bottom: 50px; ">Student Info</h3>
     </div>
 
+    <div v-if="!studentCreated">
     <div class="create-form">
       <form @submit.prevent="createStudent">
         <div class="form-row">
@@ -41,17 +42,17 @@
             <label for="gpa">GPA:</label>
             <input type="number" placeholder="gpa..." v-model="newStudent.gpa" step="0.01">
           </div>
-
         </div>
 
-        <button type="submit">Add student</button>
+        <button type="submit">Next</button>
+
       </form>
+    </div>
     </div>
 
 
     <div v-if="studentCreated">
       <div class="create-form">
-        <hr class="new1">
         <h2>Add Courses to Student</h2>
         <form @submit.prevent="addCoursesToStudent">
           <label for="course">Courses:</label>
@@ -63,10 +64,11 @@
               label="name"
               placeholder="Select courses"
           />
-          <button type="submit">Add Courses</button>
+          <button type="submit">Add Student</button>
         </form>
       </div>
     </div>
+
 
     <div v-if="editingStudent">
       <div class="create-form">
@@ -109,6 +111,7 @@
               <input type="number" placeholder="gpa..." v-model="editingStudent.gpa" step="0.01">
             </div>
           </div>
+
           <div class="edit-form-button">
             <button type="submit">Update student</button>
             <button type="button" @click="cancelEdit">Cancel</button>
@@ -116,6 +119,26 @@
       </form>
     </div>
 </div>
+
+
+    <div v-if="studentUpdated">
+      <div class="create-form">
+        <hr class ="new1">
+        <h2> Edit Student Courses </h2>
+        <form @submit.prevent="updateCourses">
+          <label for="course">Courses:</label>
+          <multiselect
+              v-model="coursesToAdd"
+              :options="allCourses"
+              :multiple="true"
+              track-by="id"
+              label="name"
+              placeholder="Select courses"
+          />
+          <button type="submit">Add Courses</button>
+        </form>
+      </div>
+    </div>
 
 
       <div class="search-wrapper">
@@ -202,6 +225,7 @@ export default {
       allPrograms: [],
       allCourses: [],
       studentCreated: false,
+      studentUpdated: false,
       studentId: null,
     };
   },
@@ -249,20 +273,60 @@ export default {
     },
 
     updateStudent() {
-      this.editingStudent.program = this.editingStudent.program ? {id: this.editingStudent.program} : null;
+      const updatedStudent = {
+        ...this.editingStudent,
+        program: this.editingStudent.program ? {id: this.editingStudent.program} : null,
+      };
       fetch(`/api/student/${this.editingStudent.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(this.editingStudent),
+        body: JSON.stringify(updatedStudent),
       })
           .then(response => response.json()) // Handle response
           .then(() => {
             this.fetchStudents();
-            this.editingStudent = null;
+            this.studentUpdated = true;
+            // this.editingStudent = false;
           });
     },
+
+
+    updateCourses() {
+      fetch(`/api/student-courses/${this.editingStudent.id}/update`, {
+        method: "PUT",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify ({
+          courseIds: this.coursesToAdd.map(course => course.id),
+        }),
+      })
+          .then(data => {
+            this.fetchStudents();
+            this.coursesToAdd = [];
+            this.studentUpdated = false;
+            this.editingStudent = null;
+          })
+    },
+
+
+    // updateStudent() {
+    //   this.editingStudent.program = this.editingStudent.program ? {id: this.editingStudent.program} : null;
+    //   fetch(`/api/student/${this.editingStudent.id}`, {
+    //     method: "PUT",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify(this.editingStudent),
+    //   })
+    //       .then(response => response.json()) // Handle response
+    //       .then(() => {
+    //         this.fetchStudents();
+    //         this.editingStudent = null;
+    //       });
+    // },
 
     deleteStudent(studentId) {
       fetch(`/api/student/${studentId}`, {
@@ -328,7 +392,7 @@ export default {
       fetch('/api/program/')
           .then(response => response.json())
           .then(data => {
-            this.allPrograms = data;
+            this.allPrograms = data.reverse();
           });
     },
 
@@ -336,7 +400,7 @@ export default {
       fetch('/api/course/')
           .then(response => response.json())
           .then(data => {
-            this.allCourses = data;
+            this.allCourses = data.reverse();
           });
     },
   }
@@ -442,15 +506,18 @@ button:hover {
 .search-fields {
   display: flex;
   height: 45px;
-  gap: 20px; /* Adds spacing between the two fields */
-  justify-content: left; /* Ensures the fields are centered */
+  gap: 20px;
 }
 
 .search-fields input,
 .search-fields select {
-  height: 45px /* Ensure all fields have the same width */
+  height: 45px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+  width: 200px;
 }
-
 
 .table-wrapper {
   width: 100%; /* Fixed width */

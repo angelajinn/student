@@ -17,6 +17,28 @@
       </form>
     </div>
 
+
+    <div v-if="editingProgram">
+      <div class="create-form">
+
+        <hr class="new1">
+
+        <h2>Edit Program</h2>
+        <form @submit.prevent="updateProgram">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="programName">Program name:</label>
+              <input type="text" required placeholder="program name..." v-model="editingProgram.name">
+            </div>
+          </div>
+          <div class="edit-form-button">
+            <button type="submit">Update</button>
+            <button type="button" @click="cancelEdit">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <div class="table-wrapper">
       <ul>
         <table>
@@ -31,8 +53,10 @@
             <td>{{ program.name }}</td>
 
             <td>
+              <div class="table-buttons">
               <button @click="editProgram(program)">Edit</button>
               <button @click="deleteProgram(program.id)">Delete</button>
+              </div>
             </td>
           </tr>
           </tbody>
@@ -52,6 +76,7 @@ export default {
         name: ''
       },
       allPrograms:[],
+      editingProgram: null,
 
     };
   },
@@ -80,7 +105,30 @@ export default {
       fetch('/api/program/')
           .then(response => response.json())
           .then(data => {
-            this.allPrograms = data;
+            this.allPrograms = data.reverse();
+          });
+    },
+
+    editProgram(program) {
+      this.editingProgram = {...program};
+    },
+
+    cancelEdit() {
+      this.editingProgram = null;
+    },
+
+    updateProgram() {
+      fetch(`/api/program/${this.editingProgram.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(this.editingProgram),
+      })
+          .then(response => response.json()) // Handle response
+          .then(() => {
+            this.fetchPrograms();
+            this.editingProgram = null;
           });
     },
 
@@ -197,6 +245,11 @@ button:hover {
   font-family: 'Raleway', sans-serif;
 }
 
+.edit-form-button {
+  display:flex;
+  gap: 10px;
+}
+
 table {
   width: 100%; /* Ensures table takes up the full width of its container */
   table-layout: fixed; /* Prevents column resizing based on content */
@@ -217,5 +270,10 @@ td, td {
   border-bottom: 1px solid #ddd;
 }
 
+.table-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
 
 </style>
