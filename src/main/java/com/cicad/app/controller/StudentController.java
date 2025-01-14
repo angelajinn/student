@@ -1,6 +1,7 @@
 package com.cicad.app.controller;
 
 import com.cicad.app.entities.Student;
+import com.cicad.app.entities.Program;
 import com.cicad.app.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -34,9 +35,18 @@ public class StudentController {
 		return studentService.update(sourceStudent);
 	}
 
-	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/{id}", method = RequestMethod.POST)
 	public void delete(@PathVariable Integer id) {
 		studentService.delete(id);
+	}
+
+	@RequestMapping(value = "/filter", method = RequestMethod.GET)
+	public List<Student> filterStudents(@RequestParam(required = false) String firstName,
+											 @RequestParam(required = false) String lastName,
+											 @RequestParam(required = false) Integer programId,
+											@RequestParam(defaultValue = "0") int page,
+											@RequestParam(defaultValue = "5") int size) {
+		return studentService.filterStudents(firstName, lastName, programId, page, size);
 	}
 
 }

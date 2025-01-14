@@ -64,5 +64,8 @@ public class StudentService {
 		studentRepository.delete(id);
 	}
 
+	public List<Student> filterStudents(String firstName, String lastName, Integer programId, int page, int size) {
+		return studentRepository.filterStudents(firstName, lastName, programId, page, size);
+	}
 
 }

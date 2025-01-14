@@ -140,21 +140,24 @@
       </div>
     </div>
 
-
       <div class="search-wrapper">
         <div class="search-fields">
-          <input class="form-control" v-model="filters.firstName.value" placeholder="Filter by First Name"/>
-          <input class="form-control" v-model="filters.lastName.value" placeholder="Filter by Last Name"/>
-          <select v-model="filters.program.value" class="form-control">
+          <input class="form-control" v-model="filters.firstName.value" placeholder="Filter by First Name" @input="applyFilters"/>
+          <input class="form-control" v-model="filters.lastName.value" placeholder="Filter by Last Name" @input="applyFilters"/>
+          <select v-model="filters.program.value" class="form-control" @change="applyFilters">
             <option value="">Filter by Program</option>
             <option v-for="program in allPrograms" :key="program.id" :value="program.id">
-              {{program.name}}
+              {{ program.name }}
             </option>
           </select>
         </div>
       </div>
 
-      <div class="table-wrapper">
+    <div class="overflow-auto">
+
+    </div>
+
+    <div class="table-wrapper">
         <table>
           <thead>
           <tr>
@@ -192,6 +195,11 @@
     </div>
   </div>
 
+  <div>
+    <button @click="changePage(currentPage - 1)" :disabled="currentPage === 1">Previous</button>
+    <button @click="changePage(currentPage + 1)">Next</button>
+  </div>
+
 </template>
 
 <script>
@@ -221,40 +229,66 @@ export default {
 
       coursesToAdd: [],
       allStudents: [], // array that stores the list of all students
+      filteredStudents: [],
       editingStudent: null,
       allPrograms: [],
       allCourses: [],
       studentCreated: false,
       studentUpdated: false,
       studentId: null,
+
+      perPage: 5,
+      currentPage: 1,
     };
   },
 
-  computed: {
-    filteredStudents() {
-      return this.allStudents.filter(student => {
-        const matchFirstName = this.filters.firstName.value
-            ? student.firstName.toLowerCase().includes(this.filters.firstName.value.toLowerCase())
-            : true;
-
-        const matchLastName = this.filters.lastName.value
-            ? student.lastName.toLowerCase().includes(this.filters.lastName.value.toLowerCase())
-            : true;
-
-        const matchProgram = this.filters.program.value
-            ? student.program && student.program.id === this.filters.program.value
-            : true;
-        return matchFirstName && matchLastName && matchProgram;
-      });
-    },
-  },
-
+    // What shows up when the page first loads
   created() {
-    this.fetchStudents();
+    // this.fetchStudents();
+    this.fetchFilteredStudents(); // We want the filtered students showed since the pagination mechanic is in this method and not "fetchStudents"
     this.fetchPrograms();
     this.fetchCourses();
   },
+
   methods: {
+
+    applyFilters() {
+      // console.log(this.filters);
+      this.currentPage = 0;
+      this.fetchFilteredStudents();
+    },
+
+    fetchFilteredStudents() {
+      // Build the query parameters object
+      const queryString = new URLSearchParams();
+
+      // Only append the filters that have a value
+      if (this.filters.firstName.value) {
+        queryString.append('firstName', this.filters.firstName.value);
+      }
+      if (this.filters.lastName.value) {
+        queryString.append('lastName', this.filters.lastName.value);
+      }
+      if (this.filters.program.value) {
+        queryString.append('programId', this.filters.program.value);
+      }
+
+      // Add pagination parameters
+      queryString.append('page', this.currentPage);
+      queryString.append('size', this.perPage);
+
+      fetch(`/api/student/filter?${queryString}`)
+            .then(response => response.json())
+            .then(data => {
+              this.filteredStudents = data; // Update the students with filtered data
+            });
+      },
+
+    changePage(newPage) {
+      this.currentPage = newPage;
+      this.fetchFilteredStudents();
+    },
+
     editStudent(student) { // set the student to be edited
       this.editingStudent = {...student};
       this.editingStudent.program = student.program ? student.program.id : null;
@@ -268,7 +302,8 @@ export default {
       fetch('/api/student/')
           .then(response => response.json()) //  parses JSON
           .then(data => {
-            this.allStudents = data.reverse(); // Populate allStudents array
+            this.allStudents = data; // Store the full list of students
+            this.filteredStudents = [...data];
           });
     },
 
@@ -292,7 +327,6 @@ export default {
           });
     },
 
-
     updateCourses() {
       fetch(`/api/student-courses/${this.editingStudent.id}/update`, {
         method: "PUT",
@@ -310,23 +344,6 @@ export default {
             this.editingStudent = null;
           })
     },
-
-
-    // updateStudent() {
-    //   this.editingStudent.program = this.editingStudent.program ? {id: this.editingStudent.program} : null;
-    //   fetch(`/api/student/${this.editingStudent.id}`, {
-    //     method: "PUT",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify(this.editingStudent),
-    //   })
-    //       .then(response => response.json()) // Handle response
-    //       .then(() => {
-    //         this.fetchStudents();
-    //         this.editingStudent = null;
-    //       });
-    // },
 
     deleteStudent(studentId) {
       fetch(`/api/student/${studentId}`, {
