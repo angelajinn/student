@@ -120,7 +120,6 @@
     </div>
 </div>
 
-
     <div v-if="studentUpdated">
       <div class="create-form">
         <hr class ="new1">
@@ -148,6 +147,12 @@
             <option value="">Filter by Program</option>
             <option v-for="program in allPrograms" :key="program.id" :value="program.id">
               {{ program.name }}
+            </option>
+          </select>
+          <select v-model="filters.course.value" class="form-control" @change="applyFilters">
+            <option value="">Filter by Course</option>
+            <option v-for="course in allCourses" :key="course.id" :value="course.id">
+              {{ course.name }}
             </option>
           </select>
         </div>
@@ -193,12 +198,17 @@
           </tbody>
         </table>
     </div>
+    <div class="page-button">
+      <button @click="changePage(currentPage - 1)" :disabled="currentPage === 1">Previous</button>
+      <button @click="changePage(currentPage + 1)" :disabled="currentPage === this.totalPages">Next</button>
+    </div>
+
+    <div class="page-numbers">
+      <h3>{{currentPage}} of {{this.totalPages}}</h3>
+    </div>
   </div>
 
-  <div>
-    <button @click="changePage(currentPage - 1)" :disabled="currentPage === 1">Previous</button>
-    <button @click="changePage(currentPage + 1)">Next</button>
-  </div>
+
 
 </template>
 
@@ -225,6 +235,7 @@ export default {
         firstName: { value: '' },
         lastName: { value: '' },
         program: { value: '' },
+        course: { value: ''},
       },
 
       coursesToAdd: [],
@@ -239,12 +250,15 @@ export default {
 
       perPage: 5,
       currentPage: 1,
+      totalStudents: 0,
+      totalPages: 0,
     };
   },
 
     // What shows up when the page first loads
   created() {
     // this.fetchStudents();
+    this.fetchStudentCount();
     this.fetchFilteredStudents(); // We want the filtered students showed since the pagination mechanic is in this method and not "fetchStudents"
     this.fetchPrograms();
     this.fetchCourses();
@@ -254,8 +268,9 @@ export default {
 
     applyFilters() {
       // console.log(this.filters);
-      this.currentPage = 0;
+      this.currentPage = 1;
       this.fetchFilteredStudents();
+      this.fetchFilterCount();
     },
 
     fetchFilteredStudents() {
@@ -271,6 +286,9 @@ export default {
       }
       if (this.filters.program.value) {
         queryString.append('programId', this.filters.program.value);
+      }
+      if (this.filters.course.value) {
+        queryString.append('courseId', this.filters.course.value);
       }
 
       // Add pagination parameters
@@ -296,6 +314,45 @@ export default {
 
     cancelEdit() {
       this.editingStudent = null;
+    },
+
+    fetchStudentCount() {
+      fetch('/api/student/count')
+          .then(response => response.json())
+          .then(data => {
+            this.totalStudents = data;
+            this.calculatePages(); // call function here
+          });
+    },
+
+    fetchFilterCount() {
+      // Build the query parameters object
+      const queryString = new URLSearchParams();
+
+      // Only append the filters that have a value
+      if (this.filters.firstName.value) {
+        queryString.append('firstName', this.filters.firstName.value);
+      }
+      if (this.filters.lastName.value) {
+        queryString.append('lastName', this.filters.lastName.value);
+      }
+      if (this.filters.program.value) {
+        queryString.append('programId', this.filters.program.value);
+      }
+      if (this.filters.course.value) {
+        queryString.append('courseId', this.filters.course.value);
+      }
+
+      fetch(`/api/student/countFilter?${queryString}`)
+          .then(response => response.json())
+          .then(data => {
+            this.totalStudents = data;
+            this.calculatePages();
+          });
+    },
+
+    calculatePages() {
+      this.totalPages = Math.ceil(this.totalStudents / this.perPage);
     },
 
     fetchStudents() {
@@ -364,7 +421,6 @@ export default {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          // 'Content-Type': 'application/x-www-form-urlencoded',v
         },
         body: JSON.stringify({
           firstName: this.newStudent.firstName,
@@ -530,16 +586,13 @@ button:hover {
 .search-fields select {
   height: 45px;
   padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  box-sizing: border-box;
   width: 200px;
 }
 
 .table-wrapper {
   width: 100%; /* Fixed width */
   max-width: 1200px;
-  max-height: 400px; /* Maximum height */
+  max-height: 470px; /* Maximum height */
   overflow-y: auto; /* Enable scrolling for excess rows */
   margin: 20px auto;
   display: flex;
@@ -570,5 +623,16 @@ hr.new1 {
   border-top: 1px solid #f1f1f1;
 }
 
+.page-button {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.page-numbers {
+  display: flex;
+  justify-content: center;
+  font-family: 'Raleway', sans-serif;
+}
 
 </style>

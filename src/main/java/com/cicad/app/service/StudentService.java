@@ -39,7 +39,10 @@ public class StudentService {
 		}
 		if (sourceStudent.getGpa() >= 0 && sourceStudent.getGpa() <= 5) {
 			actualStudent.setGpa(sourceStudent.getGpa());
+		} else {
+			throw new IllegalArgumentException("GPA must be between 0 and 5");
 		}
+
 		actualStudent.setProgram(sourceStudent.getProgram());
 		actualStudent.setCourse(sourceStudent.getCourses());
 		return studentRepository.create(actualStudent);
@@ -64,8 +67,15 @@ public class StudentService {
 		studentRepository.delete(id);
 	}
 
-	public List<Student> filterStudents(String firstName, String lastName, Integer programId, int page, int size) {
-		return studentRepository.filterStudents(firstName, lastName, programId, page, size);
+	public List<Student> filterStudents(String firstName, String lastName, Integer programId, Integer courseId, int page, int size) {
+		return studentRepository.filterStudents(firstName, lastName, programId, courseId, page, size);
 	}
 
+	public long getStudentCount() {
+		return studentRepository.countStudents();
+	}
+
+	public long countData(String firstName, String lastName, Integer programId, Integer courseId) {
+		return studentRepository.countData(firstName, lastName, programId, courseId);
+	}
 }

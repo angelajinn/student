@@ -1,7 +1,6 @@
 package com.cicad.app.controller;
 
 import com.cicad.app.entities.Student;
-import com.cicad.app.entities.Program;
 import com.cicad.app.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -44,9 +43,23 @@ public class StudentController {
 	public List<Student> filterStudents(@RequestParam(required = false) String firstName,
 											 @RequestParam(required = false) String lastName,
 											 @RequestParam(required = false) Integer programId,
+											@RequestParam(required = false) Integer courseId,
 											@RequestParam(defaultValue = "0") int page,
 											@RequestParam(defaultValue = "5") int size) {
-		return studentService.filterStudents(firstName, lastName, programId, page, size);
+		return studentService.filterStudents(firstName, lastName, programId, courseId, page, size);
 	}
 
-}
+	@GetMapping("/count")
+	public long getCountOfStudents() {
+		return studentService.getStudentCount();
+	}
+
+	@GetMapping("/countFilter")
+	public long countData(@RequestParam(required = false) String firstName,
+						  @RequestParam(required = false) String lastName,
+						  @RequestParam(required = false) Integer programId,
+						  @RequestParam(required = false) Integer courseId) {
+		return studentService.countData(firstName, lastName, programId, courseId);
+	}
+
+	}

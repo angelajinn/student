@@ -28,7 +28,11 @@ public class ProgramService {
 
     public Program create(Program sourceProgram) {
         Program actualProgram = new Program();
-        actualProgram.setName(sourceProgram.getName());
+        if (sameName(sourceProgram.getName())) {
+            throw new IllegalArgumentException("Already have this program name");
+        } else {
+            actualProgram.setName(sourceProgram.getName());
+        }
         return programRepository.create(actualProgram);
     }
 
@@ -43,6 +47,15 @@ public class ProgramService {
 
     public void delete(Integer id) {
         programRepository.delete(id);
+    }
+
+    public Boolean sameName(String name) {
+        for (Program program : programRepository.findAllPrograms()) {
+            if (program.getName().equals(name)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

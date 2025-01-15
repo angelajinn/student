@@ -43,10 +43,6 @@ public class Student implements Serializable {
 	@JsonIgnoreProperties("student")
 	private Set<StudentCourses> courses;
 
-	public Integer getCount() {
-		return
-	}
-
 	public Integer getId() {
 		return id;
 	}
